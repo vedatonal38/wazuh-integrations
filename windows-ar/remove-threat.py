@@ -4,7 +4,7 @@
 import os
 import sys
 import json
-import datetime
+import datetime 
 
 if os.name == 'nt':
     LOG_FILE = "C:\\Program Files (x86)\\ossec-agent\\active-response\\active-responses.log"
