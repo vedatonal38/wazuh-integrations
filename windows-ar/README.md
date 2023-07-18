@@ -29,3 +29,5 @@ Değişiklikleri uygulamak için Wazuh yöneticisini yeniden başlatın:
 ```
 sudo systemctl restart wazuh-manager
 ```
+
+ https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/remove-threat.py
