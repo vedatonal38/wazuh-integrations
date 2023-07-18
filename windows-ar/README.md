@@ -1,6 +1,8 @@
 
 ## VIRUSTOTAL & malicious files using CDB lists
 
+https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/remove-threat.py
+
 Active response Python srcipt kullanmak için aşağıdaki <command> ve <active-response> bloklarını Wazuh server /var/ossec/etc/ossec.conf dosyasına ekleyin:
 
 ```
@@ -30,4 +32,3 @@ Değişiklikleri uygulamak için Wazuh yöneticisini yeniden başlatın:
 sudo systemctl restart wazuh-manager
 ```
 
-https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/remove-threat.py
