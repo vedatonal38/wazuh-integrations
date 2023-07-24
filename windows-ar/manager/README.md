@@ -43,3 +43,4 @@ Wazuh yöneticisi üzerinde, ajanlarda kullanılmak üzere localfile ve active r
     )
     ```
 3. [Custom active response](https://documentation.wazuh.com/current/user-manual/capabilities/active-response/custom-active-response-scripts.html#method-2-run-a-python-script-through-a-batch-launcher) ile Python Script'in Çalıştırılmasıdır.
+    - [Active response](https://github.com/vedatonal38/wazuh-detaysoft-doc/blob/main/README.md#active-response-script-agent-lerde-komut-y%C3%BCr%C3%BCtme) detaylı anlatım  
