@@ -28,19 +28,19 @@ set fileName=%~1
 @REM localfile active deki çalistirmak istelen PYTHON dosyasin üzerinden Local ye dosya indrme veya güncelme
 set "URL=%~2"
 
-
 if %fileName:~-3%==py ( @REM Local file active 
     rem Bu <localfile> ile calistirmak icin tasarlandı
     if "%URL%" equ "" (
         if exist !ARPATH!!fileName! (
             @REM Python calismasi
-            %PYTHON_ABSOLUTE_PATH% !ARPATH!\%fileName%
+            @REM echo "!ARPATH!!fileName!"
+            %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!"
             exit \b
         )
     ) else (
         REM URL kontrolü için PYTHON da (python check-manager.py <URL>)
         @REM echo %URL%
-        %PYTHON_ABSOLUTE_PATH% !"ARPATH\"!!fileName! %URL%
+        %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!" %URL%
         exit \b
     )
 ) else if "%fileName%" equ "" ( @REM Custom active response
