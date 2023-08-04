@@ -24,16 +24,22 @@ if errorlevel 1 (
 )
 
 @REM localfile active deki çalistirmak istelen PYTHON dosyasi
-set fileName=%~1 
+set fileName=%~1
+:trim_right
+if "!fileName:~-1!"==" " (
+    set "fileName=!fileName:~0,-1!"
+    goto :trim_right
+) 
 @REM localfile active deki çalistirmak istelen PYTHON dosyasin üzerinden Local ye dosya indrme veya güncelme
 set "URL=%~2"
 
-if %fileName:~-3%==py ( @REM Local file active 
+if "%fileName:~-2%" equ "py" ( @REM Local file active 
     rem Bu <localfile> ile calistirmak icin tasarlandı
     if "%URL%" equ "" (
         if exist !ARPATH!!fileName! (
             @REM Python calismasi
-            @REM echo "!ARPATH!!fileName!"
+            @REM echo !ARPATH!!fileName!"
+            
             %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!"
             exit \b
         )
@@ -44,7 +50,7 @@ if %fileName:~-3%==py ( @REM Local file active
         exit \b
     )
 ) else if "%fileName%" equ "" ( @REM Custom active response
-    rem Bu <active_response> ile calistirmak icin tasarlandı (tetikleme)
+    rem Bu active_response ile calistirmak icin tasarlandı (tetikleme)
     call :read
     set aux=!input:*"extra_args":[=!
     for /f "tokens=1 delims=]" %%a in ("!aux!") do (
@@ -60,9 +66,11 @@ if %fileName:~-3%==py ( @REM Local file active
         set /a i+=1
     )
     if "!i!" equ "1" ( @rem tek parametre 
-        set script=!aux:~1,-1!
+        set script=!aux! 
+        @REM :~1,-1!
+        @REM echo %YYYY%/%AA%/%GG% %HH%:%MM%:%SS% active-response\bin\%~nx0: !script! >> %ARPATH_LOG%
         call :processScript !script!
-        @REM exit /b
+        exit /b
     ) else (
         set "script="
         set "param_list="
@@ -76,7 +84,7 @@ if %fileName:~-3%==py ( @REM Local file active
             )
         )
         if exist "%ARPATH%%script%" (
-            %PYTHON_ABSOLUTE_PATH% !"ARPATH\"!!param_list!
+            %PYTHON_ABSOLUTE_PATH% "!ARPATH!!param_list!"
         )   
     )
     exit /b
@@ -94,6 +102,7 @@ if exist "%ARPATH%%script%" (
         set aux=%%a
     )
     set command=!aux:~1,-1!
+    @REM echo %YYYY%/%AA%/%GG% %HH%:%MM%:%SS% active-response\bin\%~nx0: !command! !script! >> %ARPATH_LOG%
 
     echo !input! > alert.txt
 
@@ -114,7 +123,9 @@ exit /b
 copy nul pipe1.txt >nul
 copy nul pipe2.txt >nul
 
-"%~f0" launcher %~3 <pipe1.txt >pipe2.txt | %PYTHON_ABSOLUTE_PATH% !ARPATH!%~2 <pipe2.txt >pipe1.txt
+echo %YYYY%/%AA%/%GG% %HH%:%MM%:%SS% active-response\bin\%~nx0: %PYTHON_ABSOLUTE_PATH% !ARPATH!%~2 >> %ARPATH_LOG%
+
+"%~f0" launcher %~3 <pipe1.txt >pipe2.txt | %PYTHON_ABSOLUTE_PATH% "!ARPATH!%~2" <pipe2.txt >pipe1.txt
 
 del pipe1.txt pipe2.txt
 exit /b
