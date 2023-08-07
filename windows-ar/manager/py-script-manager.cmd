@@ -14,7 +14,7 @@ set "SS=%DT:~12,2%"
 
 set ARPATH=%programfiles(x86)%\ossec-agent\active-response\bin\
 set ARPATH_LOG="%programfiles(x86)%\ossec-agent\active-response\active-responses.log"
-set PYTHON_ABSOLUTE_PATH=python1
+set PYTHON_ABSOLUTE_PATH=python
 
 %PYTHON_ABSOLUTE_PATH% --version > nul 2>&1
 if errorlevel 1 (
