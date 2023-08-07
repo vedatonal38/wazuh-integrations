@@ -13,7 +13,6 @@ set _date=%YYYY%/%AA%/%GG% %HH%:%MM%:%SS%
 set ARPATH=%programfiles(x86)%\ossec-agent\active-response\bin\
 set ARPATH_LOG="%programfiles(x86)%\ossec-agent\active-response\active-responses.log"
 set ARPATH_JSON_FILE="%programfiles(x86)%\ossec-agent\active-response\stdin.txt"
-set lnkparsePath=<PYTHON_PATH>
 
 set input=
 for /f "delims=" %%a in ('PowerShell -command "$logInput = Read-Host; Write-Output $logInput"') do (
@@ -26,16 +25,21 @@ for /F "tokens=* USEBACKQ" %%F in (`Powershell -Nop -C "(Get-Content 'C:\Program
     set syscheck_file_path=%%F
 )
 del /f %ARPATH_JSON_FILE%
+set lnkparse_exe_path="D:\Program Files (x86)\pypy\Scripts\lnkparse.exe"
 
-@REM echo %syscheck_file_path% >> %ARPATH_LOG%
-
-for /f "delims=" %%a in ('powershell -command "& \"%lnkparsePath%\" -j \"%syscheck_file_path%\" | jq -c ."') do (
-    Set str=%%a
+if exist \"%lnkparse_exe_path%\" (
+    :: Extracting an LNK file data with the LnkParse3 program and structuring output with the jq tool.
+    for /f "delims=" %%a in ('powershell -command "& \"%lnkparse_exe_path%\" -j \"%syscheck_file_path%\" | jq -c ."') do (
+        Set str=%%a
+    )
+    :: Replacing single \ with double \\ in the file path for proper parsing.
+    set syscheck_file_path=!syscheck_file_path:\=\\!
+    :: Renaming field name "data" for proper indexing and adding file_path to the data.
+    set str=!str:{"data":{={"lnk_data":{"file_path":"%syscheck_file_path%",!
+    echo %_date% wazuh-lnkparse: INFO - Scan result: %str% >> %ARPATH_LOG%
+    exit /b
+) else (
+    echo %_date% active-response/bin/%~nx0: {"error": "e0", "message": "The PYTHON Lnkparse module is not installed."} >> %ARPATH_LOG%
+    exit /b
 )
 
-:: Replacing single \ with double \\ in the file path for proper parsing.
-set syscheck_file_path=!syscheck_file_path:\=\\!
-:: Renaming field name "data" for proper indexing and adding file_path to the data.
-set str=!str:{"data":{={"lnk_data":{"file_path":"%syscheck_file_path%",!
-echo %_date% wazuh-lnkparse: INFO - Scan result: %str% >> %ARPATH_LOG%
-exit /b
