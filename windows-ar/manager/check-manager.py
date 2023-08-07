@@ -104,7 +104,7 @@ def control():
         <rules_id>503</rules_id>
     </active-response>
     """
-    ar_name_local = ar_name.split("\\")[-1][:-1]
+    ar_name_local = ar_name.split("\\")[-1]
     files = os.listdir(os.getcwd())
     for file in files:
         if not file.endswith(".exe") and not file == ar_name_local:
