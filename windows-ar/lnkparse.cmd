@@ -14,7 +14,7 @@ set ARPATH=%programfiles(x86)%\ossec-agent\active-response\bin\
 set ARPATH_LOG="%programfiles(x86)%\ossec-agent\active-response\active-responses.log"
 set ARPATH_JSON_FILE="%programfiles(x86)%\ossec-agent\active-response\stdin.txt"
 
-set lnkparse_exe_path="D:\Program Files (x86)\pypy\Scripts\lnkparse.exe"
+set lnkparse_exe_path=<PYTHON_PATH>
 
 %lnkparse_exe_path% -h > nul 2>&1
 if errorlevel 1 (
