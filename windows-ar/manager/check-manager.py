@@ -65,7 +65,7 @@ def download_file(url, file_name):
                     write_debug_file("File updated successfully : " + file_name)
                 except urllib.error.URLError as e:
                     write_debug_file("File updated failed : " + file_name)
-            return
+            exit()
         try:
             urllib.request.urlretrieve(url, filename=file_name)
             # print("File downloaded successfully")
