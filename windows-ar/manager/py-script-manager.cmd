@@ -24,10 +24,9 @@ if errorlevel 1 (
 )
 
 @REM localfile active deki çalistirmak istelen PYTHON dosyasi
-set fileName=%~1 
+set "fileName=%~1"
 @REM localfile active deki çalistirmak istelen PYTHON dosyasin üzerinden Local ye dosya indrme veya güncelme
 set "URL=%~2"
-
 
 if %fileName:~-3%==py ( @REM Local file active 
     rem Bu <localfile> ile calistirmak icin tasarlandı
@@ -43,40 +42,34 @@ if %fileName:~-3%==py ( @REM Local file active
         %PYTHON_ABSOLUTE_PATH% !"ARPATH\"!!fileName! %URL%
         exit \b
     )
-) else if "%fileName%" equ "" ( @REM Custom active response
+) 
+
+if "%fileName%" equ "" ( @REM Custom active response
     rem Bu <active_response> ile calistirmak icin tasarlandı (tetikleme)
     call :read
     set aux=!input:*"extra_args":[=!
     for /f "tokens=1 delims=]" %%a in ("!aux!") do (
         set aux=%%~a
     )
-    set i=0
-    for %%a in (!aux!) do (
-        set "arg[!i!]=%%~a"
-        if !i! equ 0 (
-            set "tmp=%%~a"
-            set "arg[!i!]=!tmp:~1!"
-        )
-        set /a i+=1
+        
+    for /f "tokens=1,2 delims=," %%a in ("!aux!") do (
+        set "py_srcipt=%%a"
+        set "url=%%b"
     )
-    if "!i!" equ "1" ( @rem tek parametre 
-        set script=!aux:~1,-1!
+    
+    set "py_srcipt=!py_srcipt:~0,-1!"
+    set "url=!url:~1!"
+
+    @REM echo "!py_srcipt!" >> %ARPATH_LOG%
+    if "!url!" equ "~1" (
+        set script=!py_srcipt!
+        echo !script!
         call :processScript !script!
-        @REM exit /b
-    ) else (
-        set "script="
-        set "param_list="
-        for /l %%n in (0, 1, %i%+1) do (
-            set "ar=!arg[%%n]!"
-            if defined param_list (
-                set "param_list=!param_list! !ar!"
-            ) else (
-                set "script=!ar!"
-                set "param_list=!ar!"
-            )
-        )
-        if exist "%ARPATH%%script%" (
-            %PYTHON_ABSOLUTE_PATH% !"ARPATH\"!!param_list!
+        exit /b
+    ) else (    
+        if exist "!ARPATH!!py_srcipt!" (
+            
+            %PYTHON_ABSOLUTE_PATH% "!ARPATH!!py_srcipt!" !url!
         )   
     )
     exit /b
