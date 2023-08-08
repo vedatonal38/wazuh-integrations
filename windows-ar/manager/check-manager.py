@@ -55,12 +55,13 @@ def calculate_file_hash(file_path=None, response=None, algorithm='sha256', chunk
 def download_file(url, file_name):
     response = check_url(url)
     if response:
-        if os.path.isfile(file_name):
-            hash1 = calculate_file_hash(file_path=file_name)
+        pwd = os.getcwd() + "\\active-response\\bin\\" + file_name
+        if os.path.isfile(pwd):
+            hash1 = calculate_file_hash(file_path=pwd)
             hash2 = calculate_file_hash(response=response)
             if hash1 != hash2:
                 try:
-                    urllib.request.urlretrieve(url, filename=file_name)
+                    urllib.request.urlretrieve(url, filename=pwd)
                     write_debug_file("File updated successfully : " + file_name)
                 except urllib.error.URLError as e:
                     write_debug_file("File updated failed : " + file_name)
