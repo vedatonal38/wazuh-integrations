@@ -33,13 +33,13 @@ if %fileName:~-3%==py ( @REM Local file active
     if "%URL%" equ "" (
         if exist !ARPATH!!fileName! (
             @REM Python calismasi
-            %PYTHON_ABSOLUTE_PATH% !ARPATH!\%fileName%
+            %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!"
             exit \b
         )
     ) else (
         REM URL kontrolü için PYTHON da (python check-manager.py <URL>)
         @REM echo %URL%
-        %PYTHON_ABSOLUTE_PATH% !"ARPATH\"!!fileName! %URL%
+        %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!" %URL%
         exit \b
     )
 ) 
