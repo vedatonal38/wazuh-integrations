@@ -28,7 +28,7 @@ set "fileName=%~1"
 @REM localfile active deki çalistirmak istelen PYTHON dosyasin üzerinden Local ye dosya indrme veya güncelme
 set "URL=%~2"
 
-if %fileName:~-3%==py ( @REM Local file active 
+if %fileName:~-2%==py ( @REM Local file active 
     rem Bu <localfile> ile calistirmak icin tasarlandı
     if "%URL%" equ "" (
         if exist !ARPATH!!fileName! (
