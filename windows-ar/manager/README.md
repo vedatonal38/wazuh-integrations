@@ -70,7 +70,7 @@ Wazuh yöneticisi üzerinde, ajanlarda kullanılmak üzere localfile ve active r
 
 ```
 <command>
-   <name>py-script-manager-update</name>
+   <name>file-update</name>
    <executable>py-script-manager.cmd</executable>
    <extra_args>check-manager.py https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/README.md</extra_args>
    <timeout_allowed>no</timeout_allowed>
