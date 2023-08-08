@@ -44,3 +44,35 @@ Wazuh yöneticisi üzerinde, ajanlarda kullanılmak üzere localfile ve active r
     ```
 3. [Custom active response](https://documentation.wazuh.com/current/user-manual/capabilities/active-response/custom-active-response-scripts.html#method-2-run-a-python-script-through-a-batch-launcher) ile Python Script'in Çalıştırılmasıdır.
     - [Active response](https://github.com/vedatonal38/wazuh-detaysoft-doc/blob/main/README.md#active-response-script-agent-lerde-komut-y%C3%BCr%C3%BCtme) detaylı anlatım  
+
+4. Active response çalıştırma şekilleri
+- check-manager.py ve py-script-manager.cmd dosyaların günceleme işlemleri;
+
+```
+<command>
+   <name>check-manager-update</name>
+   <executable>py-script-manager.cmd</executable>
+   <extra_args>check-manager.py https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/manager/check-manager.py</extra_args>
+   <timeout_allowed>no</timeout_allowed>
+</command>
+```
+
+```
+<command>
+   <name>py-script-manager-update</name>
+   <executable>py-script-manager.cmd</executable>
+   <extra_args>check-manager.py https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/manager/py-script-manager.cmd</extra_args>
+   <timeout_allowed>no</timeout_allowed>
+</command>
+```
+
+- Diğer dosyaların güncelleme, ekleme ve kaldırma işlemleri;
+
+```
+<command>
+   <name>py-script-manager-update</name>
+   <executable>py-script-manager.cmd</executable>
+   <extra_args>check-manager.py https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/README.md</extra_args>
+   <timeout_allowed>no</timeout_allowed>
+</command>
+```
