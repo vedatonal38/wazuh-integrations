@@ -150,7 +150,7 @@ def main(args):
                 elif "l" + class_name == platform_name + "-ar":
                     download_file(line.strip(), file_name)
                     files.append(file_name)
-        if platform_name == "Windows":
+        if platform_name.lower() == "windows":
             control()
             for pwd_files in os.listdir(os.getcwd()):
                 if not pwd_files in files and not pwd_files.endswith(".exe") and not pwd_files.endswith(".cmd") and not args[0] in pwd_files:
