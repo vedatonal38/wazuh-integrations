@@ -110,9 +110,9 @@ def control():
     </active-response>
     """
     ar_name_local = ar_name.split("\\")[-1]
+    write_debug_file(os.getcwd())
     files = os.listdir(os.getcwd())
     for file in files:
-        write_debug_file(file)
         if not file.endswith(".exe") and not file == ar_name_local:
             if check_text_in_file(file, "<PYTHON_PATH>"):
                 py = sys.executable
