@@ -77,7 +77,7 @@ def download_file(url, file_name):
 
 def check_text_in_file(file_path, text_to_find):
     try:
-        with open(file_path, 'r') as file:
+        with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
             if text_to_find in content:
                 return True
@@ -88,7 +88,7 @@ def check_text_in_file(file_path, text_to_find):
         return False
 
 def file_chenged(file, old, new):
-    content = open (file, "r").read()
+    content = open(file, "r").read()
     content = content.replace(old, new)
     open(file, "w").write(content)
 
@@ -110,16 +110,16 @@ def control():
     </active-response>
     """
     ar_name_local = ar_name.split("\\")[-1]
-    write_debug_file(os.getcwd())
-    files = os.listdir(os.getcwd())
+    pwd = os.getcwd() + "\\active-response\\bin\\"
+    files = os.listdir(pwd)
     for file in files:
         if not file.endswith(".exe") and not file == ar_name_local:
-            if check_text_in_file(file, "<PYTHON_PATH>"):
+            if check_text_in_file(pwd + file, "<python_path_exe>"):
                 py = sys.executable
                 extension = file.split(".")[0]
                 py_ = py.split("\\")[-1] # lnkparse
                 py = py.replace(f"{py_}", f"Scripts\{extension}.exe")
-                file_chenged(file, "<PYTHON_PATH>", f"\"{py}\"")
+                file_chenged(pwd+file, "<python_path_exe>", f"\"{py}\"")
         
 def main(args):
     global ar_name, platform_name
