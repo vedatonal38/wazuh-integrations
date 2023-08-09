@@ -68,9 +68,10 @@ def download_file(url, file_name):
             else:
                 write_debug_file("No update : " + file_name)
             return
+        
         try:
-            urllib.request.urlretrieve(url, filename=file_name)
-            # print("File downloaded successfully")
+            urllib.request.urlretrieve(url, filename=pwd)
+            write_debug_file("File downloaded successfully : " + file_name)
         except urllib.error.URLError as e:
             write_debug_file("Failed to download file : " + url)
 
@@ -130,7 +131,7 @@ def main(args):
     url = args[1]
     file_extension = url.split(".")[-1]
     if file_extension == "py" or file_extension == "cmd":
-        write_debug_file("Start python file run function")
+        # write_debug_file("Start python file run function")
         file_name = url.split("/")[-1]
         download_file(url, file_name)
     elif file_extension == "md":
@@ -143,13 +144,13 @@ def main(args):
                 parse = line.split("/")
                 class_name = parse[-2].lower()
                 file_name = parse[-1]
-                # print(class_name)
                 if class_name == platform_name + "-ar":
                     download_file(line.strip(), file_name)
                     files.append(file_name)
                 elif "l" + class_name == platform_name + "-ar":
                     download_file(line.strip(), file_name)
                     files.append(file_name)
+        write_debug_file("Platform name : " + platform_name)
         if platform_name == "Windows":
             control()
             for pwd_files in os.listdir(os.getcwd()):
