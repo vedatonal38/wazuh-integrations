@@ -150,7 +150,6 @@ def main(args):
                 elif "l" + class_name == platform_name + "-ar":
                     download_file(line.strip(), file_name)
                     files.append(file_name)
-        write_debug_file("Platform name : " + platform_name)
         if platform_name == "Windows":
             control()
             for pwd_files in os.listdir(os.getcwd()):
