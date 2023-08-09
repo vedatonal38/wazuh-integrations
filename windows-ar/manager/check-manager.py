@@ -112,6 +112,7 @@ def control():
     ar_name_local = ar_name.split("\\")[-1]
     files = os.listdir(os.getcwd())
     for file in files:
+        write_debug_file(file)
         if not file.endswith(".exe") and not file == ar_name_local:
             if check_text_in_file(file, "<PYTHON_PATH>"):
                 py = sys.executable
@@ -151,6 +152,7 @@ def main(args):
                     download_file(line.strip(), file_name)
                     files.append(file_name)
         if platform_name.lower() == "windows":
+            write_debug_file("Start windows file check function")
             control()
             for pwd_files in os.listdir(os.getcwd()):
                 if not pwd_files in files and not pwd_files.endswith(".exe") and not pwd_files.endswith(".cmd") and not args[0] in pwd_files:
