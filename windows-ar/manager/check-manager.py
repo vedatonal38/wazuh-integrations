@@ -152,11 +152,11 @@ def main(args):
                     download_file(line.strip(), file_name)
                     files.append(file_name)
         if platform_name.lower() == "windows":
-            write_debug_file("Start windows file check function")
             control()
-            for pwd_files in os.listdir(os.getcwd()):
-                if not pwd_files in files and not pwd_files.endswith(".exe") and not pwd_files.endswith(".cmd") and not args[0] in pwd_files:
-                    os.remove(pwd_files)
+            pwd = os.getcwd() + "\\active-response\\bin\\"
+            for pwd_files in os.listdir(pwd):
+                if not pwd_files in files and not pwd_files.endswith(".exe") and not pwd_files.endswith(".cmd") and not pwd_files in ar_name:
+                    os.remove(pwd + pwd_files)
     else:
         write_debug_file("Unsupported URL : " + url)
         
