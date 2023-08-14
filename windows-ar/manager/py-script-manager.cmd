@@ -23,126 +23,62 @@ if errorlevel 1 (
     exit /b
 )
 
-@REM localfile active deki çalistirmak istelen PYTHON dosyasi
 set "fileName=%~1"
-@REM localfile active deki çalistirmak istelen PYTHON dosyasin üzerinden Local ye dosya indrme veya güncelme
 set "URL=%~2"
 
 if %fileName:~-2%==py ( @REM Local file active 
-    rem Bu <localfile> ile calistirmak icin tasarlandı
     if "%URL%" equ "" (
         if exist !ARPATH!!fileName! (
-            @REM Python calismasi
             %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!"
             exit \b
         )
     ) else (
-        REM URL kontrolü için PYTHON da (python check-manager.py <URL>)
-        @REM echo %URL%
         %PYTHON_ABSOLUTE_PATH% "!ARPATH!!fileName!" %URL%
         exit \b
     )
 ) 
 
-if "%fileName%" equ "" ( @REM Custom active response
-    rem Bu <active_response> ile calistirmak icin tasarlandı (tetikleme)
+if "%fileName%" equ "" ( 
     call :read
     set aux=!input:*"extra_args":[=!
     for /f "tokens=1 delims=]" %%a in ("!aux!") do (
         set aux=%%~a
     )
-        
+
     for /f "tokens=1,2 delims=," %%a in ("!aux!") do (
         set "py_srcipt=%%a"
         set "url=%%b"
     )
     
-    set "py_srcipt=!py_srcipt:~0,-1!"
     set "url=!url:~1!"
+    set "py_srcipt=!py_srcipt:~0,-1!"
 
-    @REM echo "!py_srcipt!" >> %ARPATH_LOG%
-    if "!url!" equ "~1" (
-        set script=!py_srcipt!
-        echo !script!
-        call :processScript !script!
-        exit /b
-    ) else (    
-        if exist "!ARPATH!!py_srcipt!" (
-            
+    if exist "!ARPATH!!py_srcipt!" (
+        set scheme=!url:~0,4!
+        if "!scheme!" equ "http" (
             %PYTHON_ABSOLUTE_PATH% "!ARPATH!!py_srcipt!" !url!
-        )   
-    )
+            exit /b
+        ) else (
+            set alert="%programfiles(x86)%\ossec-agent\active-response\bin\alert.txt
+            
+            echo !input! > !alert!
+            %PYTHON_ABSOLUTE_PATH% "!ARPATH!!py_srcipt!" !url!
+            
+            del !alert!
+            exit /b
+        )
+    )   
     exit /b
 )
 
+@REM .\active-response\bin\py-script-manager.cmd
+
 set "name=%~1"
 goto !name!
-
-:processScript
-set "script=%~1"
-echo %script%
-if exist "%ARPATH%%script%" (
-    set aux=!input:*"command":=!
-    for /f "tokens=1 delims=," %%a in ("!aux!") do (
-        set aux=%%a
-    )
-    set command=!aux:~1,-1!
-
-    echo !input! > alert.txt
-
-    start /b cmd /c "%~f0" child !script! !command!
-
-    if "!command!" equ "add" (
-        call :wait keys.txt
-        echo(!output!
-        del keys.txt
-
-        call :read
-        echo !input! > result.txt
-    )
-)
-exit /b
-
-:child
-copy nul pipe1.txt >nul
-copy nul pipe2.txt >nul
-
-"%~f0" launcher %~3 <pipe1.txt >pipe2.txt | %PYTHON_ABSOLUTE_PATH% !ARPATH!%~2 <pipe2.txt >pipe1.txt
-
-del pipe1.txt pipe2.txt
-exit /b
-
-
-:launcher
-call :wait alert.txt
-echo(!output!)
-del alert.txt
-
-if "%~2" equ "add" (
-    call :read
-    echo !input! >keys.txt
-
-    call :wait result.txt
-    echo(!output!)
-    del result.txt
-)
-exit /b
-
 
 :read
 set input=
 for /f "delims=" %%a in ('%PYTHON_ABSOLUTE_PATH% -c "import sys; print(sys.stdin.readline())"') do (
     set input=%%a
-)
-exit /b
-
-
-:wait
-if exist "%*" (
-    for /f "delims=" %%a in (%*) do (
-        set output=%%a
-    )
-) else (
-    goto :wait
 )
 exit /b
