@@ -1,10 +1,8 @@
-#!/usr/bin/python3
-# Copyright (C) 2015-2022, Wazuh Inc.
-# All rights reserved.
 import os
 import sys
 import json
 import datetime 
+from pathlib import PureWindowsPath, PurePosixPath
 
 if os.name == 'nt':
     LOG_FILE = "C:\\Program Files (x86)\\ossec-agent\\active-response\\active-responses.log"
@@ -18,17 +16,24 @@ ABORT_COMMAND = 3
 
 OS_SUCCESS = 0
 OS_INVALID = -1
+ar_name = ""
 
 class message:
     def __init__(self):
         self.alert = ""
         self.command = 0
 
-def write_debug_file(ar_name, msg):
+def write_debug_file(msg):
+    global ar_name
     with open(LOG_FILE, mode="a") as log_file:
-        log_file.write(str(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + ar_name + ": " + msg +"\n")
+        if not ar_name.find("active-response") == -1:
+            ar_name_posix = str(PurePosixPath(PureWindowsPath(ar_name[ar_name.find("active-response"):])))
+        else:
+            ar_name_posix = "active-response/bin/" + str(PurePosixPath(PureWindowsPath(ar_name)))
+        log_file.write(str(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')) + " " + ar_name_posix + ": " + msg +"\n")
 
-def setup_and_check_message(argv):
+
+def setup_and_check_message():
     # get alert from stdin
     input_str = ""
     for line in sys.stdin:
@@ -37,8 +42,9 @@ def setup_and_check_message(argv):
 
     try:
         data = json.loads(input_str)
+        write_debug_file(input_str)
     except ValueError:
-        write_debug_file(argv[0], 'Decoding JSON has failed, invalid input format')
+        write_debug_file('Decoding JSON has failed, invalid input format')
         message.command = OS_INVALID
         return message
 
@@ -52,16 +58,15 @@ def setup_and_check_message(argv):
         message.command = DELETE_COMMAND
     else:
         message.command = OS_INVALID
-        write_debug_file(argv[0], 'Not valid command: ' + command)
+        write_debug_file('Not valid command: ' + command)
 
     return message
 
-def send_keys_and_check_message(argv, keys):
+def send_keys_and_check_message(keys):
 
     # build and send message with keys
-    keys_msg = json.dumps({"version": 1,"origin":{"name": argv[0],"module":"active-response"},"command":"check_keys","parameters":{"keys":keys}})
-
-    write_debug_file(argv[0], keys_msg)
+    keys_msg = json.dumps({"version": 1,"origin":{"name": ar_name,"module":"active-response"},"command":"check_keys","parameters":{"keys":keys}})
+    write_debug_file(keys_msg)
  
     print(keys_msg)
     sys.stdout.flush()
@@ -74,12 +79,12 @@ def send_keys_and_check_message(argv, keys):
             input_str = line
             break
  
-    # write_debug_file(argv[0], input_str)
+    # write_debug_file(input_str)
  
     try:
         data = json.loads(input_str)
     except ValueError:
-        write_debug_file(argv[0], 'Decoding JSON has failed, invalid input format')
+        write_debug_file('Decoding JSON has failed, invalid input format')
         return message
  
     action = data.get("command")
@@ -90,16 +95,18 @@ def send_keys_and_check_message(argv, keys):
         ret = ABORT_COMMAND
     else:
         ret = OS_INVALID
-        write_debug_file(argv[0], "Invalid value of 'command'")
+        write_debug_file("Invalid value of 'command'")
  
     return ret
  
 def main(argv):
- 
-    write_debug_file(argv[0], "Started")
+    global ar_name
+    ar_name = argv[0]
+
+    write_debug_file("Started")
  
     # validate json and get command
-    msg = setup_and_check_message(argv)
+    msg = setup_and_check_message()
 
     if msg.command < 0:
         sys.exit(OS_INVALID)
@@ -107,27 +114,31 @@ def main(argv):
     if msg.command == ADD_COMMAND:
         alert = msg.alert["parameters"]["alert"]
         keys = [alert["rule"]["id"]]
-        action = send_keys_and_check_message(argv, keys)
-
+        action = send_keys_and_check_message(keys)
         # if necessary, abort execution
         if action != CONTINUE_COMMAND:
-
             if action == ABORT_COMMAND:
-                write_debug_file(argv[0], "Aborted")
+                write_debug_file("Aborted")
                 sys.exit(OS_SUCCESS)
             else:
-                write_debug_file(argv[0], "Invalid command")
+                write_debug_file( "Invalid command")
                 sys.exit(OS_INVALID)
-
         try:
-            os.remove(msg.alert["parameters"]["alert"]["data"]["virustotal"]["source"]["file"])
-            write_debug_file(argv[0], json.dumps(msg.alert) + " Successfully removed threat")
+            data = msg.alert["parameters"]["alert"]
+            
+            if data["data"]["integration"] == "virustotal":
+                os.remove(data["virustotal"]["source"]["file"])
+            elif data["data"]["integration"] == "hybrid_analysis":
+                os.remove(data["hybrid_analysis"]["source"]["file"])
+            else:
+                write_debug_file(json.dumps(msg.alert))
+            write_debug_file( json.dumps(msg.alert) + " Successfully removed threat")
         except OSError as error:
-            write_debug_file(argv[0], json.dumps(msg.alert) + "Error removing threat")
+            write_debug_file( json.dumps(msg.alert) + "Error removing threat")
     else:
-        write_debug_file(argv[0], "Invalid command")
+        write_debug_file( "Invalid command")
 
-    write_debug_file(argv[0], "Ended")
+    write_debug_file( "Ended")
 
     sys.exit(OS_SUCCESS)
 
