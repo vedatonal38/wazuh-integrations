@@ -42,7 +42,6 @@ def setup_and_check_message():
 
     try:
         data = json.loads(input_str)
-        write_debug_file(input_str)
     except ValueError:
         write_debug_file('Decoding JSON has failed, invalid input format')
         message.command = OS_INVALID
