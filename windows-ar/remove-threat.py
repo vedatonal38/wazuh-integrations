@@ -124,15 +124,22 @@ def main(argv):
                 write_debug_file( "Invalid command")
                 sys.exit(OS_INVALID)
         try:
-            data = msg.alert["parameters"]["alert"]
+            sts = False
+            if "virustotal" in alert["data"]["integration"]:
+                os.remove(alert["data"]["virustotal"]["source"]["file"])
+                sts = True
+            elif "hybrid_analysis" in alert["data"]["integration"]:
+                os.remove(alert["data"]["hybrid_analysis"]["source"]["file"])
+                sts = True
+            elif "lnkparse" in alert["data"]["integration"]:
+                os.remove(alert["data"]["lnk_data"]["file_path"])
+                sts = True
             
-            if data["data"]["integration"] == "virustotal":
-                os.remove(data["virustotal"]["source"]["file"])
-            elif data["data"]["integration"] == "hybrid_analysis":
-                os.remove(data["hybrid_analysis"]["source"]["file"])
+            
+            if sts:
+                write_debug_file( json.dumps(msg.alert) + " Successfully removed threat")
             else:
-                write_debug_file(json.dumps(msg.alert))
-            write_debug_file( json.dumps(msg.alert) + " Successfully removed threat")
+                write_debug_file("Error")
         except OSError as error:
             write_debug_file( json.dumps(msg.alert) + "Error removing threat")
     else:
