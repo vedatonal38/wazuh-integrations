@@ -7,3 +7,5 @@ https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar
 https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/Unix-ar/remove-threat.sh
 
 https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/lnkparse.cmd
+
+https://raw.githubusercontent.com/vedatonal38/wazuh-integrations/main/windows-ar/manager/launcher.cmd
